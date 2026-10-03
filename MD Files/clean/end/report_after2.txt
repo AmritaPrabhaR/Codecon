@@ -1,0 +1,106 @@
+﻿
+======================================================================
+VALIDATION REPORT -- 41 violation(s) found
+======================================================================
+
+
+-- amazon.json ----------------
+  [Bug 1     ] clause    15 | Conditions of Use
+             Possible unsplit items at line(s) [1]: ['1. grant Amazon Seller Services Private Limited and its affi']
+  [Bug 1     ] clause    49 | Conditions of Use
+             Possible unsplit items at line(s) [1]: ["(a) Your and/ or your company's name, address, telephone num"]
+  [Bug 1     ] clause    65 | Conditions of Use
+             Possible unsplit items at line(s) [1, 2]: ['1. Transparency and Consent. No Agent may access, use, or in', '2. Limitation on Access. At our sole discretion, we may limi']
+
+-- amazon_prime_video.json ----------------
+  [Bug 1     ] clause    15 | Terms of Service
+             Possible unsplit items at line(s) [1]: ['f. Payment Methods. If you sign up for your video-only subsc']
+  [Bug 1     ] clause    17 | Terms of Service
+             Possible unsplit items at line(s) [1, 2]: ['g. Promotional Trials. We sometimes offer eligible customers', 'h. Limited License to Digital Content. Subject to payment of']
+  [Bug 1     ] clause    18 | Terms of Service
+             Possible unsplit items at line(s) [1]: ['j. Playback Quality; Streaming. The playback resolution and ']
+  [Bug 1     ] clause    19 | Terms of Service
+             Possible unsplit items at line(s) [1]: ['(iv) attempt to disable, bypass, modify, defeat, or otherwis']
+
+-- flipkart.json ----------------
+  [Bug 1     ] clause    19 | Terms of Use
+             Possible unsplit items at line(s) [1, 2, 3]: ['1. GSTIN associated with your registered business, as provid', '2. Entity name of your registered business, as provided by y', '3. Not all products are eligible for business purchases on t']
+  [Bug 1     ] clause    20 | Terms of Use
+             Possible unsplit items at line(s) [1, 2, 3]: ['6. If GSTIN and/or business entity details are not provided ', '7. Flipkart is not responsible to verify the correctness of ', '8. Flipkart and Seller shall not entertain any request for a']
+
+-- google.json ----------------
+  [Bug 6     ] clause     8 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    12 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    13 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    20 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    21 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    22 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    27 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+
+-- instagram.json ----------------
+  [Bug 6     ] clause     6 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause     7 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause     8 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    20 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    21 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    23 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    24 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    25 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 6     ] clause    26 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+
+-- meta.json ----------------
+  [Bug FORMAT] clause    10 | Terms of Service
+             Text > 1500 chars (1672) [soft/review]
+  [Bug 6     ] clause    47 | Terms of Service
+             Possible orphan bullet start without lead-in colon in previous clause
+
+-- snapchat.json ----------------
+  [Bug 6     ] clause    34 | Privacy Policy
+             Possible orphan bullet start without lead-in colon in previous clause
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Snap Terms of Service": got k=[2, 3, 4], expected [1, 2, 3, 4]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Who Can Use the Services": got k=[1, 1, 2, 2], expected [1, 2]
+  [Bug 8     ] clause     ? | Terms of Service
+             Inconsistent n in part labels for "Rights You Grant Us": [(13, 1, 3), (74, 1, 4), (14, 2, 3), (75, 2, 4), (15, 3, 3), (76, 3, 4), (77, 4, 4)]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Rights You Grant Us": got k=[1, 1, 2, 2, 3, 3, 4], expected [1, 2, 3]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "AI Features": got k=[1, 1, 2, 2, 3, 3], expected [1, 2, 3]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Content Moderation": got k=[1, 1, 2, 2, 3, 3], expected [1, 2, 3]
+  [Bug 8     ] clause     ? | Terms of Service
+             Inconsistent n in part labels for "Respecting the Services and SnapΓÇÖs Rights": [(25, 1, 3), (87, 1, 4), (26, 2, 3), (88, 2, 4), (27, 3, 3), (89, 3, 4), (90, 4, 4)]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Respecting the Services and SnapΓÇÖs Rights": got k=[1, 1, 2, 2, 3, 3, 4], expected [1, 2, 3]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Respecting Others' Rights": got k=[1, 1, 2, 2, 3, 3], expected [1, 2, 3]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Safety": got k=[1, 1, 2, 2], expected [1, 2]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Third-Party Materials and Services": got k=[1, 1, 2, 2], expected [1, 2]
+  [Bug 8     ] clause     ? | Terms of Service
+             Non-contiguous part labels for "Termination and Suspension": got k=[1, 1, 2, 2], expected [1, 2]
+
+-- swiggy.json ----------------
+  [Bug 6     ] clause     7 | Privacy Policy
+             Possible orphan bullet start without lead-in colon in previous clause
+
+======================================================================
+Total: 41 violation(s)

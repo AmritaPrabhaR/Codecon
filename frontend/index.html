@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plain Terms – Legal agreements, explained plainly</title>
+  <meta name="description" content="Plain Terms turns long EULAs and Terms & Conditions into short plain-language summaries with risk flags." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f4ff',
+              100: '#dce6ff',
+              200: '#baccff',
+              300: '#85a8ff',
+              400: '#4d7bff',
+              500: '#2355ff',
+              600: '#0f3af5',
+              700: '#0a2be0',
+              800: '#0e24b5',
+              900: '#11238f',
+              950: '#0b1559',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- React 18 via CDN (development build for ES module support) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel standalone for JSX transform -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .risk-high  { --risk-color: #ef4444; --risk-bg: #fef2f2; --risk-border: #fecaca; }
+    .risk-medium{ --risk-color: #f59e0b; --risk-bg: #fffbeb; --risk-border: #fde68a; }
+    .risk-low   { --risk-color: #22c55e; --risk-bg: #f0fdf4; --risk-border: #bbf7d0; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+    .animate-fade-in { animation: fadeIn 0.35s ease both; }
+    .spinner { animation: spin 0.8s linear infinite; }
+    .skeleton { animation: pulse 1.5s ease-in-out infinite; background: #e5e7eb; border-radius: 6px; }
+    .highlighted-clause { background: #fef9c3; border-left: 3px solid #eab308; padding-left: 8px; transition: background 0.4s; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .clause-card { transition: box-shadow 0.15s, transform 0.15s; }
+    .clause-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, createContext, useContext } = React;
+
+// ─── Data ────────────────────────────────────────────────────────────────────
+
+const CLAUSES = [
+  { id:1, heading:"Broad License to Your Content", text:"By submitting, posting or displaying content on or through our Services, you grant us a worldwide, non-exclusive, royalty-free licence (with the right to sublicence) to use, copy, reproduce, process, adapt, modify, publish, transmit, display and distribute such content in any and all media or distribution methods (now known or later developed). You agree that this licence includes the right for us to provide, promote, and improve the Services and to make content submitted to or through the Services available to other companies, organisations or individuals for the syndication, broadcast, distribution, promotion or publication of such content on other media and services.", summary:"You give the platform a permanent, free, global right to use, copy, modify, and share anything you post — including showing it in ads or giving it to partners — even after you delete your account.", risk_level:"high", category:"Data collection", company:"Generic" },
+  { id:2, heading:"Automatic Renewal of Subscription", text:"Your subscription will automatically renew at the end of each billing period unless you cancel it at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings after purchase. No refunds will be given for the unused portion of any subscription period.", summary:"Your subscription auto-renews and charges your card automatically. You must cancel at least 24 hours before renewal. No refunds for partial periods.", risk_level:"high", category:"Auto-renewal", company:"Netflix" },
+  { id:3, heading:"Sharing Data with Third Parties", text:"We may share your personal information with third-party service providers, business partners, affiliates, and advertisers. These third parties may use your information to provide services on our behalf, to conduct research, or to provide targeted advertising. We do not control how third parties use your personal information, and their practices are governed by their own privacy policies.", summary:"Your personal data can be shared with advertisers and partners. The company doesn't control what those third parties do with your data.", risk_level:"high", category:"Third-party sharing", company:"Generic" },
+  { id:4, heading:"Unilateral Changes to Terms", text:"We reserve the right to modify these Terms at any time. If we make material changes to these Terms, we will notify you by email or by posting a notice on our website prior to the effective date of the changes. Your continued use of the Services after the effective date of the revised Terms constitutes your acceptance of the terms. If you do not agree to the new Terms, please stop using the Services.", summary:"The company can change the rules at any time. Continuing to use the service means you accept the new terms, even if you didn't read them.", risk_level:"high", category:"Liability", company:"Generic" },
+  { id:5, heading:"Limitation of Liability", text:"To the maximum extent permitted by applicable law, in no event shall the company, its affiliates, directors, employees, agents, partners, suppliers or content providers be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of (or inability to access or use) the Services, whether based on warranty, contract, tort (including negligence), or any other legal theory.", summary:"The company limits its legal responsibility for almost everything — lost data, financial harm, or inability to use the service. You take on most of the risk.", risk_level:"high", category:"Liability", company:"Generic" },
+  { id:6, heading:"Arbitration Clause — Waiver of Class Action", text:"You and the company agree to resolve any disputes through final and binding individual arbitration, rather than in court. You waive your right to participate in a class action lawsuit or class-wide arbitration. This arbitration agreement applies to all claims, whether based on contract, statute, regulation, tort, fraud or any other legal theory.", summary:"You give up your right to sue in court or join a class-action lawsuit. Any dispute must go through private arbitration — individually.", risk_level:"medium", category:"Liability", company:"Generic" },
+  { id:7, heading:"Account Termination at Company Discretion", text:"We may suspend or terminate your account or cease providing you with all or part of the Services at any time, for any reason or no reason, including but not limited to if we reasonably believe that you have violated these Terms or created risk or possible legal exposure for us. We will make reasonable efforts to notify you when we do so via the email address associated with your account.", summary:"Your account can be deleted at any time, for any reason, with just an email notice. You may lose all your data and purchases.", risk_level:"medium", category:"Cancellation", company:"Generic" },
+  { id:8, heading:"Location and Device Data Collection", text:"When you use our mobile application, we may collect information about your location, device type, operating system, unique device identifiers, browser type, and mobile network information. We use this information to provide, maintain, and improve our Services, to develop new services and features, and to protect the company and our users.", summary:"The app collects your location, device ID, and network info. This data is used broadly — including to develop new products.", risk_level:"medium", category:"Data collection", company:"WhatsApp" },
+  { id:9, heading:"User-Generated Content Remains Your Responsibility", text:"You are solely responsible for all content that you upload, post, email, transmit or otherwise make available via the Services. We do not pre-screen content, but reserve the right to refuse or remove any content. You agree that you must evaluate, and bear all risks associated with, the use of any content, including any reliance on the accuracy, completeness, or usefulness of such content.", summary:"You're responsible for what you post. The platform can remove content but doesn't guarantee anything is accurate or safe.", risk_level:"low", category:"Liability", company:"Generic" },
+  { id:10, heading:"Cookies and Tracking Technologies", text:"We use cookies, web beacons, pixel tags and similar tracking technologies to help customise the Services and improve your experience. By using the Services, you agree to our use of these technologies. You may choose to set your web browser to refuse cookies, but some features of our Services may not function properly if cookies are disabled.", summary:"The service uses cookies and trackers. You agree to this by using it. Refusing cookies may break some features.", risk_level:"low", category:"Data collection", company:"Generic" },
+];
+
+const SAMPLE_TEXTS = {
+  whatsapp: `WhatsApp Terms of Service (Sample Excerpt)\n\nBy submitting content on our Services, you grant us a worldwide, non-exclusive, royalty-free licence to use, copy, reproduce, process, adapt, modify, publish, transmit, display and distribute such content.\n\nWhen you use our mobile application, we may collect information about your location, device type, operating system, unique device identifiers, browser type, and mobile network information.\n\nWe use cookies, web beacons, pixel tags and similar tracking technologies. By using the Services, you agree to our use of these technologies.\n\nWe reserve the right to modify these Terms at any time. Your continued use of the Services constitutes your acceptance of the terms.\n\nTo the maximum extent permitted by applicable law, in no event shall the company be liable for any indirect, incidental, special, consequential, or punitive damages.`,
+  instagram: `Instagram Terms of Use (Sample Excerpt)\n\nWe may share your personal information with third-party service providers, business partners, affiliates, and advertisers. We do not control how third parties use your personal information.\n\nWhen you share or upload content on our Service, you grant us a non-exclusive, royalty-free, transferable, sub-licensable, worldwide license to host, use, distribute, modify, run, copy, publicly perform or display, translate, and create derivative works of your content.\n\nWe may suspend or terminate your account at any time, for any reason or no reason.\n\nYou are solely responsible for all content that you upload, post, or otherwise make available via the Services.`,
+  netflix: `Netflix Terms of Use (Sample Excerpt)\n\nYour Netflix membership will automatically renew and the membership fee for the next billing cycle will be charged to your Payment Method unless you cancel your membership before that date.\n\nYou and Netflix agree that any dispute shall be settled by binding arbitration. YOU AND NETFLIX ARE EACH WAIVING THE RIGHT TO A TRIAL BY JURY OR TO PARTICIPATE IN A CLASS ACTION.\n\nNetflix shall not be liable to you for any indirect, incidental, special, consequential or punitive damages.\n\nNetflix reserves the right to change these Terms of Use at any time. Your continued use of Netflix constitutes your acceptance of the revised Terms of Use.`,
+  flipkart: `Flipkart Terms of Use (Sample Excerpt)\n\nFlipkart reserves the right to suspend or terminate your account and access to the Services at any time at our sole and absolute discretion.\n\nWe may share your personal information with our subsidiaries, affiliates, business partners, service providers and third-party vendors.\n\nIn no event shall Flipkart be liable for any direct, indirect, punitive, incidental, special, consequential damages resulting from your use of the Platform.\n\nAll disputes shall be referred to arbitration. The arbitration shall be conducted in English and the seat shall be Bangalore.\n\nBy using the Platform, you agree to our use of cookies and similar tracking technologies.`,
+};
+
+const TRANSLATIONS = {
+  en: {
+    appName:'Plain Terms', tagline:'Legal agreements, explained in plain language.',
+    inputPlaceholder:'Paste your Terms of Service, EULA, or Privacy Policy here…',
+    urlPlaceholder:'Or enter a URL (coming soon)', simplifyBtn:'Simplify', loadSample:'Load sample:',
+    emptyError:'Please paste some agreement text before simplifying.', loading:'Analysing your agreement…',
+    resultsTitle:'Analysis complete', filterAll:'All', filterHigh:'High risk', filterMedium:'Medium risk',
+    filterLow:'Low risk', showOriginal:'Show original clause', hideOriginal:'Hide original clause',
+    overlayTitle:'Side-by-side preview', originalText:'Original Agreement', summaryPanel:'Summary',
+    backToInput:'← New analysis', viewOverlay:'Side-by-side view',
+    disclaimer:'Summaries are for understanding only and are not legal advice.',
+    translationUnavailable:'⚠ Translation unavailable for this clause.',
+    high:'High', medium:'Medium', low:'Low', noResults:'No clauses match the current filter.',
+    clausesFound:(n)=>`${n} clause${n!==1?'s':''} found`,
+    categories:{ 'Data collection':'Data collection','Third-party sharing':'Third-party sharing','Auto-renewal':'Auto-renewal','Cancellation':'Cancellation','Liability':'Liability','Other':'Other' },
+  },
+  hi: {
+    appName:'सरल शर्तें', tagline:'कानूनी समझौते, सरल भाषा में।',
+    inputPlaceholder:'यहाँ अपनी सेवा की शर्तें, EULA, या गोपनीयता नीति चिपकाएँ…',
+    urlPlaceholder:'या URL दर्ज करें (जल्द आ रहा है)', simplifyBtn:'सरल करें', loadSample:'नमूना लोड करें:',
+    emptyError:'सरल करने से पहले कृपया कोई समझौता पाठ चिपकाएँ।', loading:'आपके समझौते का विश्लेषण हो रहा है…',
+    resultsTitle:'विश्लेषण पूर्ण', filterAll:'सभी', filterHigh:'उच्च जोखिम', filterMedium:'मध्यम जोखिम',
+    filterLow:'कम जोखिम', showOriginal:'मूल खंड दिखाएँ', hideOriginal:'मूल खंड छिपाएँ',
+    overlayTitle:'साथ-साथ पूर्वावलोकन', originalText:'मूल समझौता', summaryPanel:'सारांश',
+    backToInput:'← नया विश्लेषण', viewOverlay:'साथ-साथ दृश्य',
+    disclaimer:'सारांश केवल समझने के लिए हैं और कानूनी सलाह नहीं हैं।',
+    translationUnavailable:'⚠ इस खंड का अनुवाद उपलब्ध नहीं है।',
+    high:'उच्च', medium:'मध्यम', low:'कम', noResults:'वर्तमान फ़िल्टर से कोई खंड मेल नहीं खाता।',
+    clausesFound:(n)=>`${n} खंड मिले`,
+    categories:{ 'Data collection':'डेटा संग्रह','Third-party sharing':'तृतीय-पक्ष साझाकरण','Auto-renewal':'स्वतः नवीनीकरण','Cancellation':'रद्दीकरण','Liability':'दायित्व','Other':'अन्य' },
+  },
+  ml: {
+    appName:'ലളിത നിബന്ധനകൾ', tagline:'നിയമ കരാറുകൾ, ലളിത ഭാഷയിൽ.',
+    inputPlaceholder:'നിങ്ങളുടെ സേവന നിബന്ധനകൾ, EULA, അല്ലെങ്കിൽ സ്വകാര്യതാ നയം ഇവിടെ ഒട്ടിക്കുക…',
+    urlPlaceholder:'അല്ലെങ്കിൽ URL നൽകുക (ഉടൻ വരുന്നു)', simplifyBtn:'ലളിതമാക്കുക', loadSample:'മാതൃക ലോഡ് ചെയ്യുക:',
+    emptyError:'ലളിതമാക്കുന്നതിന് മുമ്പ് ദയവായി കരാർ വാചകം ഒട്ടിക്കുക.', loading:'നിങ്ങളുടെ കരാർ വിശകലനം ചെയ്യുന്നു…',
+    resultsTitle:'വിശകലനം പൂർത്തിയായി', filterAll:'എല്ലാം', filterHigh:'ഉയർന്ന അപകടം', filterMedium:'മധ്യ അപകടം',
+    filterLow:'കുറഞ്ഞ അപകടം', showOriginal:'യഥാർത്ഥ ഖണ്ഡം കാണുക', hideOriginal:'യഥാർത്ഥ ഖണ്ഡം മറയ്ക്കുക',
+    overlayTitle:'അടുത്തടുത്ത് പ്രിവ്യൂ', originalText:'യഥാർത്ഥ കരാർ', summaryPanel:'സംഗ്രഹം',
+    backToInput:'← പുതിയ വിശകലനം', viewOverlay:'അടുത്തടുത്ത് കാണുക',
+    disclaimer:'സംഗ്രഹങ്ങൾ മനസ്സിലാക്കുന്നതിന് മാത്രമുള്ളതാണ്, നിയമ ഉപദേശമല്ല.',
+    translationUnavailable:'⚠ ഈ ഖണ്ഡത്തിന് വിവർത്തനം ലഭ്യമല്ല.',
+    high:'ഉയർന്നത്', medium:'മധ്യം', low:'കുറഞ്ഞത്', noResults:'നിലവിലെ ഫിൽട്ടറുമായി ഒരു ഖണ്ഡവും പൊരുത്തപ്പെടുന്നില്ല.',
+    clausesFound:(n)=>`${n} ഖണ്ഡം കണ്ടെത്തി`,
+    categories:{ 'Data collection':'ഡേറ്റ ശേഖരണം','Third-party sharing':'മൂന്നാം കക്ഷി പങ്കിടൽ','Auto-renewal':'സ്വയം പുതുക്കൽ','Cancellation':'റദ്ദാക്കൽ','Liability':'ബാധ്യത','Other':'മറ്റുള്ളവ' },
+  },
+};
+
+const CLAUSE_TRANSLATIONS = {
+  hi: {
+    1:{ summary:'आप प्लेटफ़ॉर्म को अपनी पोस्ट की गई किसी भी चीज़ का उपयोग, कॉपी, संशोधित और साझा करने का स्थायी, मुफ़्त, वैश्विक अधिकार देते हैं — विज्ञापनों में दिखाना या भागीदारों को देना भी शामिल है।', heading:'आपकी सामग्री पर व्यापक लाइसेंस' },
+    2:{ summary:'आपकी सदस्यता स्वतः नवीनीकृत हो जाती है और आपके कार्ड से स्वचालित रूप से शुल्क लिया जाता है। नवीनीकरण से कम से कम 24 घंटे पहले रद्द करें। आंशिक अवधि के लिए कोई धनवापसी नहीं।', heading:'सदस्यता का स्वतः नवीनीकरण' },
+  },
+  ml: {
+    1:{ summary:'നിങ്ങൾ പോസ്റ്റ് ചെയ്യുന്ന ഏതൊരു കാര്യവും ഉപയോഗിക്കാനും, പകർത്താനും, പരിഷ്‌ക്കരിക്കാനും, പങ്കിടാനും പ്ലാറ്റ്‌ഫോമിന് നിരന്തരമായ, സൗജന്യ, ആഗോള അവകാശം നിങ്ങൾ നൽകുന്നു.', heading:'നിങ്ങളുടെ ഉള്ളടക്കത്തിനുള്ള വിശാല ലൈസൻസ്' },
+    2:{ summary:'നിങ്ങളുടെ സബ്‌സ്‌ക്രിപ്‌ഷൻ സ്വയം പുതുക്കുകയും കാർഡ് ഓട്ടോമാറ്റിക്കായി ചാർജ് ചെയ്യുകയും ചെയ്യും. 24 മണിക്കൂർ മുമ്പ് റദ്ദാക്കണം. ഭാഗിക കാലയളവിന് റീഫണ്ടില്ല.', heading:'സബ്‌സ്‌ക്രിപ്‌ഷൻ സ്വയം പുതുക്കൽ' },
+  },
+};
+
+// ─── Context ─────────────────────────────────────────────────────────────────
+
+const LangContext = createContext({ lang:'en', t: TRANSLATIONS.en });
+
+function useLang() { return useContext(LangContext); }
+
+// ─── Mock API ─────────────────────────────────────────────────────────────────
+
+async function simplify(input) {
+  await new Promise(r => setTimeout(r, 1800));
+  const high   = CLAUSES.filter(c=>c.risk_level==='high').length;
+  const medium = CLAUSES.filter(c=>c.risk_level==='medium').length;
+  const low    = CLAUSES.filter(c=>c.risk_level==='low').length;
+  return { clauses:CLAUSES, counts:{high,medium,low,total:CLAUSES.length} };
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+
+const RISK_STYLES = {
+  high:   { badge:'bg-red-100 text-red-700 border border-red-200',   dot:'bg-red-500',   icon:'⚠', label:'High',   bar:'bg-red-500' },
+  medium: { badge:'bg-amber-100 text-amber-700 border border-amber-200', dot:'bg-amber-400', icon:'◉', label:'Medium', bar:'bg-amber-400' },
+  low:    { badge:'bg-green-100 text-green-700 border border-green-200', dot:'bg-green-500', icon:'✓', label:'Low',    bar:'bg-green-500' },
+};
+
+const CATEGORIES = ['Data collection','Third-party sharing','Auto-renewal','Cancellation','Liability','Other'];
+
+const CAT_STYLES = {
+  'Data collection':    'bg-blue-50 text-blue-700 border-blue-200',
+  'Third-party sharing':'bg-purple-50 text-purple-700 border-purple-200',
+  'Auto-renewal':       'bg-orange-50 text-orange-700 border-orange-200',
+  'Cancellation':       'bg-rose-50 text-rose-700 border-rose-200',
+  'Liability':          'bg-slate-100 text-slate-700 border-slate-200',
+  'Other':              'bg-gray-50 text-gray-700 border-gray-200',
+};
+
+// ─── Components ───────────────────────────────────────────────────────────────
+
+function Header({ lang, setLang, screen, onBack }) {
+  const { t } = useLang();
+  return (
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          {screen !== 'input' && (
+            <button onClick={onBack} className="text-brand-600 hover:text-brand-800 text-sm font-medium mr-1 transition-colors" aria-label="Go back to input screen">
+              {t.backToInput}
+            </button>
+          )}
+          <div className="flex items-center gap-2">
+            <span className="text-2xl" aria-hidden="true">📋</span>
+            <span className="font-bold text-brand-700 text-lg tracking-tight">{t.appName}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="lang-select" className="text-xs text-slate-500 hidden sm:block">Language</label>
+          <select
+            id="lang-select"
+            value={lang}
+            onChange={e=>setLang(e.target.value)}
+            className="text-sm border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:ring-2 focus:ring-brand-400 outline-none cursor-pointer"
+            aria-label="Select language"
+          >
+            <option value="en">🇬🇧 English</option>
+            <option value="hi">🇮🇳 हिंदी</option>
+            <option value="ml">🇮🇳 മലയാളം</option>
+          </select>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function SummaryBanner({ counts }) {
+  const { t } = useLang();
+  return (
+    <div className="bg-gradient-to-r from-brand-700 to-brand-600 text-white rounded-2xl p-5 shadow-lg animate-fade-in">
+      <p className="text-xs font-semibold uppercase tracking-widest opacity-75 mb-1">{t.resultsTitle}</p>
+      <h2 className="text-xl font-bold mb-4">
+        {counts.high} high-risk · {counts.medium} medium-risk · {counts.low} low-risk clause{counts.total!==1?'s':''} found
+      </h2>
+      <div className="flex gap-4 flex-wrap">
+        {[['high','⚠','red'],['medium','◉','amber'],['low','✓','green']].map(([level,icon,col])=>(
+          <div key={level} className="bg-white/15 rounded-xl px-4 py-2 flex items-center gap-2">
+            <span className="text-lg" aria-hidden="true">{icon}</span>
+            <div>
+              <div className="text-2xl font-bold leading-none">{counts[level]}</div>
+              <div className="text-xs opacity-80 capitalize">{t[level]} risk</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RiskBadge({ level }) {
+  const { t } = useLang();
+  const s = RISK_STYLES[level];
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${s.badge}`} aria-label={`Risk level: ${t[level]}`}>
+      <span aria-hidden="true">{s.icon}</span> {t[level]}
+    </span>
+  );
+}
+
+function CategoryTag({ cat }) {
+  const { t } = useLang();
+  return (
+    <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded border ${CAT_STYLES[cat]||CAT_STYLES['Other']}`}>
+      {t.categories?.[cat] || cat}
+    </span>
+  );
+}
+
+function ClauseCard({ clause, lang, onHighlight, active }) {
+  const { t } = useLang();
+  const [showOrig, setShowOrig] = useState(false);
+  const ct = CLAUSE_TRANSLATIONS[lang]?.[clause.id];
+  const hasTranslation = lang === 'en' || !!ct;
+  const heading = ct?.heading || clause.heading;
+  const summary = ct?.summary || (lang !== 'en' ? null : clause.summary);
+  return (
+    <article
+      className={`clause-card bg-white rounded-2xl border p-5 cursor-pointer ${active ? 'ring-2 ring-brand-400' : 'border-slate-200'} animate-fade-in`}
+      onClick={()=>onHighlight && onHighlight(clause.id)}
+      aria-label={`Clause: ${heading}`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+        <h3 className="font-semibold text-slate-800 text-base leading-snug">{heading}</h3>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <RiskBadge level={clause.risk_level} />
+          <CategoryTag cat={clause.category} />
+        </div>
+      </div>
+      <div className="border-l-4 pl-3 mb-3" style={{borderColor: RISK_STYLES[clause.risk_level].dot.replace('bg-','').includes('red')?'#ef4444':clause.risk_level==='medium'?'#f59e0b':'#22c55e', borderLeftColor: clause.risk_level==='high'?'#ef4444':clause.risk_level==='medium'?'#f59e0b':'#22c55e'}}>
+        {summary ? (
+          <p className="text-slate-700 text-sm leading-relaxed">{summary}</p>
+        ) : (
+          <p className="text-slate-400 text-sm italic">{t.translationUnavailable}</p>
+        )}
+      </div>
+      <button
+        onClick={e=>{e.stopPropagation();setShowOrig(v=>!v);}}
+        className="text-xs text-brand-600 hover:text-brand-800 font-medium transition-colors flex items-center gap-1"
+        aria-expanded={showOrig}
+      >
+        <span aria-hidden="true">{showOrig?'▲':'▼'}</span>
+        {showOrig ? t.hideOriginal : t.showOriginal}
+      </button>
+      {showOrig && (
+        <div className="mt-3 bg-slate-50 rounded-xl p-3 border border-slate-200 animate-fade-in">
+          <p className="text-xs text-slate-500 font-mono leading-relaxed whitespace-pre-wrap">{clause.text}</p>
+        </div>
+      )}
+    </article>
+  );
+}
+
+function FilterBar({ filter, setFilter, catFilter, setCatFilter }) {
+  const { t } = useLang();
+  const risks = [
+    { key:'all',    label:t.filterAll },
+    { key:'high',   label:t.filterHigh },
+    { key:'medium', label:t.filterMedium },
+    { key:'low',    label:t.filterLow },
+  ];
+  return (
+    <div className="flex flex-wrap gap-2 items-center" role="toolbar" aria-label="Filter controls">
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+        {risks.map(r=>(
+          <button
+            key={r.key}
+            onClick={()=>setFilter(r.key)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter===r.key?'bg-white shadow text-brand-700':'text-slate-500 hover:text-slate-700'}`}
+            aria-pressed={filter===r.key}
+          >{r.label}</button>
+        ))}
+      </div>
+      <select
+        value={catFilter}
+        onChange={e=>setCatFilter(e.target.value)}
+        className="text-sm border border-slate-200 bg-white rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-brand-400 outline-none"
+        aria-label="Filter by category"
+      >
+        <option value="all">All categories</option>
+        {CATEGORIES.map(c=><option key={c} value={c}>{t.categories?.[c]||c}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function Spinner({ label }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 py-16" role="status" aria-label={label}>
+      <svg className="spinner w-10 h-10 text-brand-500" viewBox="0 0 24 24" fill="none">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+      <p className="text-slate-500 text-sm font-medium">{label}</p>
+    </div>
+  );
+}
+
+// ─── Screens ─────────────────────────────────────────────────────────────────
+
+function InputScreen({ onResults }) {
+  const { t } = useLang();
+  const [text, setText] = useState('');
+  const [url, setUrl] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const textareaRef = useRef(null);
+
+  const loadSample = (key) => {
+    setText(SAMPLE_TEXTS[key]);
+    setError('');
+    textareaRef.current?.focus();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!text.trim()) { setError(t.emptyError); textareaRef.current?.focus(); return; }
+    setError('');
+    setLoading(true);
+    try {
+      const result = await simplify(text);
+      onResults(result, text);
+    } finally { setLoading(false); }
+  };
+
+  if (loading) return <Spinner label={t.loading} />;
+
+  return (
+    <main className="max-w-3xl mx-auto w-full px-4 py-10">
+      <div className="text-center mb-8 animate-fade-in">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-100 rounded-2xl mb-4">
+          <span className="text-3xl" aria-hidden="true">📋</span>
+        </div>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">{t.appName}</h1>
+        <p className="text-slate-500 text-lg">{t.tagline}</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 animate-fade-in">
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm flex items-center gap-2" role="alert">
+            <span aria-hidden="true">⚠</span> {error}
+          </div>
+        )}
+
+        <div className="mb-4">
+          <label htmlFor="agreement-text" className="block text-sm font-semibold text-slate-700 mb-1.5">Agreement text</label>
+          <textarea
+            id="agreement-text"
+            ref={textareaRef}
+            value={text}
+            onChange={e=>{setText(e.target.value);setError('');}}
+            placeholder={t.inputPlaceholder}
+            rows={10}
+            className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 resize-y focus:ring-2 focus:ring-brand-400 focus:border-transparent outline-none transition leading-relaxed"
+            aria-required="true"
+            aria-describedby={error?"input-error":undefined}
+          />
+          {error && <span id="input-error" className="sr-only">{error}</span>}
+          <p className="text-xs text-slate-400 mt-1">{text.length.toLocaleString()} characters</p>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="agreement-url" className="block text-sm font-semibold text-slate-700 mb-1.5">URL <span className="text-slate-400 font-normal">(optional, coming soon)</span></label>
+          <input
+            id="agreement-url"
+            type="url"
+            value={url}
+            onChange={e=>setUrl(e.target.value)}
+            placeholder={t.urlPlaceholder}
+            disabled
+            className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-400 bg-slate-50 cursor-not-allowed outline-none"
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <span className="text-sm text-slate-500 font-medium">{t.loadSample}</span>
+          {['whatsapp','instagram','netflix','flipkart'].map(k=>(
+            <button key={k} type="button" onClick={()=>loadSample(k)}
+              className="text-xs bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-600 px-3 py-1.5 rounded-lg font-medium transition-colors capitalize border border-transparent hover:border-brand-200"
+              aria-label={`Load ${k} sample agreement`}
+            >{k.charAt(0).toUpperCase()+k.slice(1)}</button>
+          ))}
+        </div>
+
+        <button type="submit"
+          className="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold py-3 rounded-xl text-base transition-colors shadow-md shadow-brand-200 focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 outline-none"
+        >
+          {t.simplifyBtn} →
+        </button>
+      </form>
+
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center animate-fade-in">
+        {[['🔍','Detects risk clauses','Flags high, medium and low risk sections automatically'],['🌐','Plain language','Rewrites legalese into clear, readable summaries'],['🌏','Multilingual','View summaries in English, Hindi and Malayalam']].map(([icon,title,desc])=>(
+          <div key={title} className="bg-white rounded-2xl border border-slate-200 p-4">
+            <div className="text-2xl mb-2" aria-hidden="true">{icon}</div>
+            <h3 className="font-semibold text-slate-800 text-sm mb-1">{title}</h3>
+            <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
+
+function ResultsScreen({ result, originalText, lang, onOverlay }) {
+  const { t } = useLang();
+  const [filter, setFilter] = useState('all');
+  const [catFilter, setCatFilter] = useState('all');
+  const [activeId, setActiveId] = useState(null);
+
+  const filtered = result.clauses.filter(c=>{
+    const riskOk = filter==='all' || c.risk_level===filter;
+    const catOk  = catFilter==='all' || c.category===catFilter;
+    return riskOk && catOk;
+  });
+
+  return (
+    <main className="max-w-5xl mx-auto w-full px-4 py-8">
+      <div className="mb-6"><SummaryBanner counts={result.counts} /></div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div>
+          <FilterBar filter={filter} setFilter={setFilter} catFilter={catFilter} setCatFilter={setCatFilter} />
+        </div>
+        <button
+          onClick={onOverlay}
+          className="flex items-center gap-2 text-sm bg-white border border-slate-200 hover:border-brand-300 hover:bg-brand-50 text-brand-700 px-4 py-2 rounded-xl font-medium transition-all shadow-sm"
+          aria-label="Open side-by-side overlay view"
+        >
+          <span aria-hidden="true">⧉</span> {t.viewOverlay}
+        </button>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-16 text-slate-400 animate-fade-in">
+          <div className="text-4xl mb-3" aria-hidden="true">🔍</div>
+          <p className="font-medium">{t.noResults}</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {filtered.map(c=>(
+            <ClauseCard key={c.id} clause={c} lang={lang} active={activeId===c.id} onHighlight={setActiveId} />
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}
+
+function OverlayScreen({ result, originalText, lang, onClose }) {
+  const { t } = useLang();
+  const [activeId, setActiveId] = useState(null);
+  const clauseRefs = useRef({});
+  const summaryRefs = useRef({});
+
+  const handleCardClick = (id) => {
+    setActiveId(id);
+    clauseRefs.current[id]?.scrollIntoView({ behavior:'smooth', block:'center' });
+  };
+
+  const paragraphs = originalText.split(/\n+/).filter(Boolean);
+
+  return (
+    <main className="max-w-7xl mx-auto w-full px-4 py-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+          <span aria-hidden="true">⧉</span> {t.overlayTitle}
+        </h2>
+        <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1 transition-colors" aria-label="Close overlay">
+          ✕ Close
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-180px)]">
+        {/* Left: original */}
+        <div className="bg-white rounded-2xl border border-slate-200 flex flex-col overflow-hidden">
+          <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
+            <span className="text-sm font-semibold text-slate-700">📄 {t.originalText}</span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-5 text-sm text-slate-600 leading-relaxed space-y-3 font-mono">
+            {paragraphs.map((p,i)=>{
+              const matchedClause = result.clauses.find(c=>p.toLowerCase().includes(c.heading.split(' ')[0].toLowerCase()) || c.text.split(' ').slice(0,5).some(w=>p.toLowerCase().includes(w.toLowerCase())));
+              const isActive = matchedClause && activeId===matchedClause.id;
+              return (
+                <p key={i}
+                  ref={el=>{ if(matchedClause) clauseRefs.current[matchedClause.id]=el; }}
+                  className={`rounded px-2 py-1 transition-all cursor-pointer ${isActive?'highlighted-clause':'hover:bg-slate-50'}`}
+                  onClick={()=>matchedClause && handleCardClick(matchedClause.id)}
+                >{p}</p>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right: summary panel */}
+        <div className="bg-white rounded-2xl border border-slate-200 flex flex-col overflow-hidden">
+          <div className="px-5 py-3 border-b border-slate-100 bg-brand-50 flex items-center gap-2">
+            <span className="text-sm font-semibold text-brand-700">📋 {t.summaryPanel}</span>
+            <span className="text-xs text-brand-500 ml-auto">Click a clause to highlight it in the original</span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {result.clauses.map(c=>(
+              <div
+                key={c.id}
+                ref={el=>{ summaryRefs.current[c.id]=el; }}
+                onClick={()=>handleCardClick(c.id)}
+                className={`rounded-xl border p-3 cursor-pointer transition-all ${activeId===c.id?'border-brand-400 ring-2 ring-brand-100 bg-brand-50':'border-slate-200 hover:border-brand-200 hover:bg-slate-50'}`}
+                role="button"
+                aria-pressed={activeId===c.id}
+                tabIndex={0}
+                onKeyDown={e=>e.key==='Enter'&&handleCardClick(c.id)}
+              >
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <span className="text-sm font-semibold text-slate-800 leading-snug">{c.heading}</span>
+                  <RiskBadge level={c.risk_level} />
+                </div>
+                {(() => {
+                  const ct = CLAUSE_TRANSLATIONS[lang]?.[c.id];
+                  const summary = ct?.summary || (lang==='en'?c.summary:null);
+                  return summary
+                    ? <p className="text-xs text-slate-600 leading-relaxed">{summary}</p>
+                    : <p className="text-xs text-slate-400 italic">{t.translationUnavailable}</p>;
+                })()}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [lang, setLang] = useState('en');
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const [screen, setScreen] = useState('input'); // 'input' | 'results' | 'overlay'
+  const [result, setResult] = useState(null);
+  const [originalText, setOriginalText] = useState('');
+
+  const handleResults = (data, text) => { setResult(data); setOriginalText(text); setScreen('results'); };
+  const handleOverlay = () => setScreen('overlay');
+  const handleBack    = () => setScreen(screen==='overlay'?'results':'input');
+
+  return (
+    <LangContext.Provider value={{ lang, t }}>
+      <div className="min-h-screen flex flex-col bg-slate-50">
+        <Header lang={lang} setLang={setLang} screen={screen} onBack={handleBack} />
+        <div className="flex-1">
+          {screen==='input'   && <InputScreen onResults={handleResults} />}
+          {screen==='results' && result && <ResultsScreen result={result} originalText={originalText} lang={lang} onOverlay={handleOverlay} />}
+          {screen==='overlay' && result && <OverlayScreen result={result} originalText={originalText} lang={lang} onClose={handleBack} />}
+        </div>
+        <footer className="bg-white border-t border-slate-200 py-4 px-4 mt-auto">
+          <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+            <span>© 2024 {t.appName}</span>
+            <span className="text-center">⚠ {t.disclaimer}</span>
+            <span>v1.0 · Mock data</span>
+          </div>
+        </footer>
+      </div>
+    </LangContext.Provider>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>

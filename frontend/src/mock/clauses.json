@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "heading": "Broad License to Your Content",
+    "text": "By submitting, posting or displaying content on or through our Services, you grant us a worldwide, non-exclusive, royalty-free licence (with the right to sublicence) to use, copy, reproduce, process, adapt, modify, publish, transmit, display and distribute such content in any and all media or distribution methods (now known or later developed). You agree that this licence includes the right for us to provide, promote, and improve the Services and to make content submitted to or through the Services available to other companies, organisations or individuals for the syndication, broadcast, distribution, promotion or publication of such content on other media and services.",
+    "summary": "You give the platform a permanent, free, global right to use, copy, modify, and share anything you post — including showing it in ads or giving it to partners — even after you delete your account.",
+    "risk_level": "high",
+    "category": "Data collection",
+    "company": "Generic"
+  },
+  {
+    "id": 2,
+    "heading": "Automatic Renewal of Subscription",
+    "text": "Your subscription will automatically renew at the end of each billing period unless you cancel it at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings after purchase. No refunds will be given for the unused portion of any subscription period.",
+    "summary": "Your subscription auto-renews and charges your card automatically. You must cancel at least 24 hours before renewal. No refunds for partial periods.",
+    "risk_level": "high",
+    "category": "Auto-renewal",
+    "company": "Netflix"
+  },
+  {
+    "id": 3,
+    "heading": "Sharing Data with Third Parties",
+    "text": "We may share your personal information with third-party service providers, business partners, affiliates, and advertisers. These third parties may use your information to provide services on our behalf, to conduct research, or to provide targeted advertising. We do not control how third parties use your personal information, and their practices are governed by their own privacy policies.",
+    "summary": "Your personal data can be shared with advertisers and partners. The company doesn't control what those third parties do with your data.",
+    "risk_level": "high",
+    "category": "Third-party sharing",
+    "company": "Generic"
+  },
+  {
+    "id": 4,
+    "heading": "Unilateral Changes to Terms",
+    "text": "We reserve the right to modify these Terms at any time. If we make material changes to these Terms, we will notify you by email or by posting a notice on our website prior to the effective date of the changes. Your continued use of the Services after the effective date of the revised Terms constitutes your acceptance of the terms. If you do not agree to the new Terms, please stop using the Services.",
+    "summary": "The company can change the rules at any time. Continuing to use the service means you accept the new terms, even if you didn't read them.",
+    "risk_level": "high",
+    "category": "Liability",
+    "company": "Generic"
+  },
+  {
+    "id": 5,
+    "heading": "Limitation of Liability",
+    "text": "To the maximum extent permitted by applicable law, in no event shall the company, its affiliates, directors, employees, agents, partners, suppliers or content providers be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of (or inability to access or use) the Services, whether based on warranty, contract, tort (including negligence), or any other legal theory.",
+    "summary": "The company limits its legal responsibility for almost everything — lost data, financial harm, or inability to use the service. You take on most of the risk.",
+    "risk_level": "high",
+    "category": "Liability",
+    "company": "Generic"
+  },
+  {
+    "id": 6,
+    "heading": "Arbitration Clause — Waiver of Class Action",
+    "text": "You and the company agree to resolve any disputes through final and binding individual arbitration, rather than in court. You waive your right to participate in a class action lawsuit or class-wide arbitration. This arbitration agreement applies to all claims, whether based on contract, statute, regulation, tort, fraud or any other legal theory.",
+    "summary": "You give up your right to sue in court or join a class-action lawsuit. Any dispute must go through private arbitration — individually.",
+    "risk_level": "medium",
+    "category": "Liability",
+    "company": "Generic"
+  },
+  {
+    "id": 7,
+    "heading": "Account Termination at Company Discretion",
+    "text": "We may suspend or terminate your account or cease providing you with all or part of the Services at any time, for any reason or no reason, including but not limited to if we reasonably believe that you have violated these Terms or created risk or possible legal exposure for us. We will make reasonable efforts to notify you when we do so via the email address associated with your account.",
+    "summary": "Your account can be deleted at any time, for any reason, with just an email notice. You may lose all your data and purchases.",
+    "risk_level": "medium",
+    "category": "Cancellation",
+    "company": "Generic"
+  },
+  {
+    "id": 8,
+    "heading": "Location and Device Data Collection",
+    "text": "When you use our mobile application, we may collect information about your location, device type, operating system, unique device identifiers, browser type, and mobile network information. We use this information to provide, maintain, and improve our Services, to develop new services and features, and to protect the company and our users.",
+    "summary": "The app collects your location, device ID, and network info. This data is used broadly — including to develop new products.",
+    "risk_level": "medium",
+    "category": "Data collection",
+    "company": "WhatsApp"
+  },
+  {
+    "id": 9,
+    "heading": "User-Generated Content Remains Your Responsibility",
+    "text": "You are solely responsible for all content that you upload, post, email, transmit or otherwise make available via the Services. We do not pre-screen content, but reserve the right to refuse or remove any content. You agree that you must evaluate, and bear all risks associated with, the use of any content, including any reliance on the accuracy, completeness, or usefulness of such content.",
+    "summary": "You're responsible for what you post. The platform can remove content but doesn't guarantee anything is accurate or safe.",
+    "risk_level": "low",
+    "category": "Liability",
+    "company": "Generic"
+  },
+  {
+    "id": 10,
+    "heading": "Cookies and Tracking Technologies",
+    "text": "We use cookies, web beacons, pixel tags and similar tracking technologies to help customise the Services and improve your experience. By using the Services, you agree to our use of these technologies. You may choose to set your web browser to refuse cookies, but some features of our Services may not function properly if cookies are disabled.",
+    "summary": "The service uses cookies and trackers. You agree to this by using it. Refusing cookies may break some features.",
+    "risk_level": "low",
+    "category": "Data collection",
+    "company": "Generic"
+  }
+]
